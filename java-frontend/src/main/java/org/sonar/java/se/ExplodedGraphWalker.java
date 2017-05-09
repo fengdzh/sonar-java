@@ -838,10 +838,12 @@ public class ExplodedGraphWalker {
     }
 
     programState = unstack.state;
-    programState = programState.stackValue(value);
+    Symbol symbol = null;
     if (tree.variable().is(Tree.Kind.IDENTIFIER) || ExpressionUtils.isSelectOnThisOrSuper(tree)) {
-      programState = programState.put(ExpressionUtils.extractIdentifier(tree).symbol(), value);
+      symbol = ExpressionUtils.extractIdentifier(tree).symbol();
+      programState = programState.put(symbol, value);
     }
+    programState = programState.stackValue(value, symbol);
   }
 
   private void executeLogicalAssignment(AssignmentExpressionTree tree) {
@@ -853,8 +855,9 @@ public class ExplodedGraphWalker {
       SymbolicValue value = unstack.values.get(0);
       programState = unstack.state;
       SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, ImmutableList.of(assignedTo, value));
-      programState = programState.stackValue(symbolicValue);
-      programState = programState.put(((IdentifierTree) variable).symbol(), symbolicValue);
+      Symbol symbol = ((IdentifierTree) variable).symbol();
+      programState = programState.stackValue(symbolicValue, symbol);
+      programState = programState.put(symbol, symbolicValue);
     }
   }
 
@@ -919,7 +922,8 @@ public class ExplodedGraphWalker {
     SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
     unarySymbolicValue.computedFrom(unstackUnary.values);
     if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
-      programState = programState.stackValue(unstackUnary.values.get(0));
+      ProgramState.SymbolicValueSymbol symbolicValueSymbol = unstackUnary.valuesAndSymbols.get(0);
+      programState = programState.stackValue(symbolicValueSymbol.sv, symbolicValueSymbol.symbol);
     } else {
       programState = programState.stackValue(unarySymbolicValue);
     }
@@ -934,10 +938,10 @@ public class ExplodedGraphWalker {
     SymbolicValue value = programState.getValue(symbol);
     if (value == null) {
       value = constraintManager.createSymbolicValue(tree);
-      programState = programState.stackValue(value);
+      programState = programState.stackValue(value, symbol);
       learnIdentifierNullConstraints(tree, value);
     } else {
-      programState = programState.stackValue(value);
+      programState = programState.stackValue(value, symbol);
     }
     programState = programState.put(symbol, value);
   }
