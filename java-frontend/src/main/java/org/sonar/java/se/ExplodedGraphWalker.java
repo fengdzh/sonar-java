@@ -851,8 +851,8 @@ public class ExplodedGraphWalker {
     // FIXME handle also assignments with this SONARJAVA-2242
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       ProgramState.Pop unstack = programState.unstackValue(2);
-      SymbolicValue assignedTo = unstack.values.get(1);
-      SymbolicValue value = unstack.values.get(0);
+      ProgramState.SymbolicValueSymbol assignedTo = unstack.valuesAndSymbols.get(1);
+      ProgramState.SymbolicValueSymbol value = unstack.valuesAndSymbols.get(0);
       programState = unstack.state;
       SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, ImmutableList.of(assignedTo, value));
       Symbol symbol = ((IdentifierTree) variable).symbol();
@@ -891,7 +891,7 @@ public class ExplodedGraphWalker {
     // Consume two and produce one SV.
     ProgramState.Pop unstackBinary = programState.unstackValue(2);
     programState = unstackBinary.state;
-    SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, unstackBinary.values);
+    SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, unstackBinary.valuesAndSymbols);
     if(tree.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree bt = (BinaryExpressionTree) tree;
       if (bt.leftOperand().symbolType().is("java.lang.String")) {

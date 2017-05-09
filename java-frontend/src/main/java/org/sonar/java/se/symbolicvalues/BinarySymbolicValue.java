@@ -22,13 +22,22 @@ package org.sonar.java.se.symbolicvalues;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+import org.sonar.java.se.ProgramState;
+import org.sonar.plugins.java.api.semantic.Symbol;
+
+import javax.annotation.Nullable;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
 
   SymbolicValue leftOp;
+  @Nullable
+  Symbol leftSymbol;
   SymbolicValue rightOp;
-
+  @Nullable
+  Symbol rightSymbol;
 
   @Override
   public boolean references(SymbolicValue other) {
@@ -37,10 +46,20 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
 
   @Override
   public void computedFrom(List<SymbolicValue> symbolicValues) {
-    Preconditions.checkArgument(symbolicValues.size() == 2);
+    List<ProgramState.SymbolicValueSymbol> symbolicValueSymbols = symbolicValues.stream()
+      .map(sv -> new ProgramState.SymbolicValueSymbol(sv, null))
+      .collect(Collectors.toList());
+    computedFromSymbols(symbolicValueSymbols);
+  }
+
+  @Override
+  public void computedFromSymbols(List<ProgramState.SymbolicValueSymbol> valueSymbols) {
+    Preconditions.checkArgument(valueSymbols.size() == 2);
     Preconditions.checkState(leftOp == null && rightOp == null, "Operands already set!");
-    rightOp = symbolicValues.get(0);
-    leftOp = symbolicValues.get(1);
+    rightOp = valueSymbols.get(0).symbolicValue();
+    rightSymbol = valueSymbols.get(0).symbol();
+    leftOp = valueSymbols.get(1).symbolicValue();
+    leftSymbol = valueSymbols.get(1).symbol();
   }
 
   @Override

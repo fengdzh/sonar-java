@@ -104,6 +104,10 @@ public class SymbolicValue {
     // no op in general case
   }
 
+  public void computedFromSymbols(List<ProgramState.SymbolicValueSymbol> computedFrom) {
+
+  }
+
   public List<SymbolicValue> computedFrom() {
     return Collections.emptyList();
   }

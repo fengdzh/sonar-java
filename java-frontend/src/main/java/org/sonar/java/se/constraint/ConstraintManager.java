@@ -71,7 +71,7 @@ public class ConstraintManager {
     return result;
   }
 
-  public SymbolicValue createBinarySymbolicValue(Tree syntaxNode, List<SymbolicValue> computedFrom) {
+  public SymbolicValue createBinarySymbolicValue(Tree syntaxNode, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
       case EQUAL_TO:
@@ -95,28 +95,28 @@ public class ConstraintManager {
       case AND:
       case AND_ASSIGNMENT:
         result = new SymbolicValue.AndSymbolicValue();
-        result.computedFrom(computedFrom);
+        result.computedFromSymbols(computedFrom);
         break;
       case OR:
       case OR_ASSIGNMENT:
         result = new SymbolicValue.OrSymbolicValue();
-        result.computedFrom(computedFrom);
+        result.computedFromSymbols(computedFrom);
         break;
       case XOR:
       case XOR_ASSIGNMENT:
         result = new SymbolicValue.XorSymbolicValue();
-        result.computedFrom(computedFrom);
+        result.computedFromSymbols(computedFrom);
         break;
       default:
         result = createDefaultSymbolicValue();
-        result.computedFrom(computedFrom);
+        result.computedFromSymbols(computedFrom);
     }
     return result;
   }
 
-  private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<SymbolicValue> computedFrom) {
+  private static RelationalSymbolicValue createRelationalSymbolicValue(Kind kind, List<ProgramState.SymbolicValueSymbol> computedFrom) {
     RelationalSymbolicValue result = new RelationalSymbolicValue(kind);
-    result.computedFrom(computedFrom);
+    result.computedFromSymbols(computedFrom);
     return result;
   }
 
