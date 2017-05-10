@@ -66,7 +66,7 @@ class A {
 
   void same_symbolic_value_referenced_with_different_symbols() {
     Object o = null; // flow@samesv {{'o' is assigned null.}}
-    Object a = o; // FIXME SONARJAVA-2280 a is not tracked
+    Object a = o; // flow@samesv {{'a' is assigned null.}}
     Object b = o; // flow@samesv {{'b' is assigned null.}}
     if (a == b) { // Noncompliant [[flows=samesv]] flow@samesv {{Expression is always true.}}
 

@@ -13,7 +13,7 @@ class A {
   }
 
   void foo3(int j) {
-    int i = 42; // flow@foo3 [[order=1]] {{'i' is assigned non-null.}} flow@foo3 [[order=2]] {{'i' is assigned non-zero.}}
+    int i = 42;
     divByZeroIfArg1Zero(i, j); // Compliant
     if (j == 0) { // flow@foo3 [[order=3]] {{Implies 'j' is non-null.}} flow@foo3 [[order=4]] {{Implies 'j' is zero.}}
       divByZeroIfArg1Zero(i, j); // Noncompliant [[flows=foo3]] {{A division by zero will occur when invoking method "divByZeroIfArg1Zero()".}} flow@foo3 [[order=5]] {{'divByZeroIfArg1Zero()' is invoked.}}

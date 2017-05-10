@@ -33,7 +33,6 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -94,8 +93,7 @@ public class FlowComputation {
     ProgramState currentNodeProgramState = currentNode.programState;
     if (currentNodeProgramState != null) {
       for (SymbolicValue symbolicValue : allSymbolicValues) {
-        Symbol symbol = currentNodeProgramState.lastAssociatedSymbols.get(symbolicValue);
-        if (symbol != null) {
+        for (Symbol symbol : symbolicValue.computedFromSymbols()) {
           trackedSymbols = trackedSymbols.add(symbol);
         }
       }
@@ -249,29 +247,21 @@ public class FlowComputation {
       Optional<LearnedAssociation> learnedAssociation = learnedAssociation(edge);
       return learnedAssociation.map(la -> {
         PSet<Symbol> newTrackedSymbols = trackedSymbols.remove(la.symbol);
-        // if assigning literal, stop tracking symbols, because same SV is reused see SONARJAVA-2164
-        if (isLiteralAssignment(edge.parent.programPoint.syntaxTree())) {
-          return newTrackedSymbols;
-        }
         ProgramState programState = edge.parent.programState;
-        Symbol symbol = programState.lastAssociatedSymbols.get(la.symbolicValue());
+        SymbolicValue peekValue = programState.peekValue();
+        Symbol symbol = peekValue == null ? null : programState.peekValueSymbol().symbol;
         if (symbol != null) {
           newTrackedSymbols = newTrackedSymbols.add(symbol);
         } else {
           // take all symbolic values used in this assignment and retrieve corresponding symbols
           for (SymbolicValue sv : computedFrom(la.symbolicValue())) {
-            Symbol newSymbol = programState.lastAssociatedSymbols.get(sv);
-            if (newSymbol != null) {
-              newTrackedSymbols = newTrackedSymbols.add(newSymbol);
+            for (Symbol sym : sv.computedFromSymbols()) {
+              newTrackedSymbols = newTrackedSymbols.add(sym);
             }
           }
         }
         return newTrackedSymbols;
       }).orElse(trackedSymbols);
-    }
-
-    private boolean isLiteralAssignment(Tree tree) {
-      return tree.is(Tree.Kind.ASSIGNMENT) && ((AssignmentExpressionTree) tree).expression().is(Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL);
     }
 
     private boolean visitedAllParents(ExplodedGraph.Edge edge) {

@@ -196,13 +196,13 @@ abstract class E {
   }
 
   public void myAlternativeMethod(String line) {
-    String s = line.length() > 0 ? line : line; // flow@myAlternativeMethod [[order=1]] {{Implies 'line' is non-null.}} flow@myAlternativeMethod [[order=2]] {{'s' is assigned non-null.}}
-    doSomething(getObject(), s); // Noncompliant [[flows=myAlternativeMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myAlternativeMethod [[order=3]] {{'getObject()' returns null.}} flow@myAlternativeMethod [[order=4]] {{'doSomething()' is invoked.}}
+    String s = line.length() > 0 ? line : line; // flow@myAlternativeMethod [[order=1]] {{Implies 'line' is non-null.}}
+    doSomething(getObject(), s); // Noncompliant [[flows=myAlternativeMethod]] {{"NullPointerException" will be thrown when invoking method "doSomething()".}} flow@myAlternativeMethod [[order=2]] {{'getObject()' returns null.}} flow@myAlternativeMethod [[order=3]] {{'doSomething()' is invoked.}}
   }
 
   private void doSomething(Object param, String text) {
     if (text.startsWith("default")) {
-      param.toString(); // flow@myMethod [[order=4]] {{Implies 'param' is null.}} flow@myMethod [[order=5]] {{'NullPointerException' is thrown here.}} flow@myOtherMethod [[order=4]] {{Implies 'param' is null.}} flow@myOtherMethod [[order=5]] {{'NullPointerException' is thrown here.}} flow@myAlternativeMethod [[order=5]] {{Implies 'param' is null.}} flow@myAlternativeMethod [[order=6]] {{'NullPointerException' is thrown here.}}
+      param.toString(); // flow@myMethod [[order=4]] {{Implies 'param' is null.}} flow@myMethod [[order=5]] {{'NullPointerException' is thrown here.}} flow@myOtherMethod [[order=4]] {{Implies 'param' is null.}} flow@myOtherMethod [[order=5]] {{'NullPointerException' is thrown here.}} flow@myAlternativeMethod [[order=4]] {{Implies 'param' is null.}} flow@myAlternativeMethod [[order=5]] {{'NullPointerException' is thrown here.}}
     }
   }
 

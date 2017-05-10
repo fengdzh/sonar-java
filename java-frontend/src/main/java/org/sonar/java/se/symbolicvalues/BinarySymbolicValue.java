@@ -28,7 +28,9 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import javax.annotation.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
 
@@ -60,6 +62,10 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     rightSymbol = valueSymbols.get(0).symbol();
     leftOp = valueSymbols.get(1).symbolicValue();
     leftSymbol = valueSymbols.get(1).symbol();
+  }
+
+  public List<Symbol> computedFromSymbols() {
+    return Stream.of(leftSymbol, rightSymbol).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
   @Override

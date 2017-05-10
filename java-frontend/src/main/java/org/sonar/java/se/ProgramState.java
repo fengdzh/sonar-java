@@ -200,6 +200,10 @@ public class ProgramState {
     return stack.isEmpty() ? null : stack.peek().sv;
   }
 
+  public SymbolicValueSymbol peekValueSymbol() {
+    return stack.peek();
+  }
+
   public SymbolicValue peekValue(int i) {
     return stack.peek(i).sv;
   }

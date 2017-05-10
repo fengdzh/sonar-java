@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
@@ -106,6 +107,10 @@ public class SymbolicValue {
 
   public void computedFromSymbols(List<ProgramState.SymbolicValueSymbol> computedFrom) {
 
+  }
+
+  public List<Symbol> computedFromSymbols() {
+    return Collections.emptyList();
   }
 
   public List<SymbolicValue> computedFrom() {
